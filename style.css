@@ -10,10 +10,27 @@
     font-weight: bold;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
+
 textarea{
     margin-top: 5px;
         border: solid 1px;
         border-radius: 5px;
         width: 100%;
         margin-top: 5px;
+}
+
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 250px; /* กำหนดความสูงที่แน่นอน */
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* สำคัญ: ป้องกันอัตราส่วนเพี้ยน */
+    object-position: center;
 }
