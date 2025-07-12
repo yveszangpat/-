@@ -95,8 +95,9 @@ fetch(url2)
         issue,
         imgURL,
         status,
-
       ] = row.c.map((cell) => (cell ? cell.v : ""));
+
+      const displayStatus = status ? status : "รอดำเนินการ";
 
       const timestamp =
         typeof timestampRaw === "string" && timestampRaw.includes("Date(")
@@ -105,43 +106,40 @@ fetch(url2)
 
       console.log("imgURL:", imgURL);
 
-
       const { date, time } = formatThaiDateTime(timestamp);
 
       function getImageURL(url) {
-      if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
+        if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
 
-      // กรณีแบบ open?id=xxxx
-      let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
-      if (match) {
+        // กรณีแบบ open?id=xxxx
+        let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
+        if (match) {
           return `https://drive.google.com/thumbnail?id=${match[1]}`;
+        }
+
+        // กรณีแบบ /d/xxxx/
+        match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}`;
+        }
+
+        // ถ้าเป็น URL อื่นก็ใช้ตรงๆ
+        return url;
       }
 
-      // กรณีแบบ /d/xxxx/
-      match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
-      if (match) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}`;
-      }
+      const imageSrc = getImageURL(imgURL);
 
-      // ถ้าเป็น URL อื่นก็ใช้ตรงๆ
-      return url;
-    }
-
-
-    const imageSrc = getImageURL(imgURL);
-
-    console.log("raw imgURL:", imgURL);
-    console.log("imageSrc:", imageSrc);
+      console.log("raw imgURL:", imgURL);
+      console.log("imageSrc:", imageSrc);
 
       const modalId = `modal${index}`;
-      
-    
+
       const card = `
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="image-wrapper">
                       <img src="${imageSrc}" class="card-img-top" alt="รูปภาพแจ้งซ่อม">
-                      <span class="status-badge">${status}</span>
+                      <span class="status-badge">${displayStatus}</span>
                     </div>
                     <div class="card-body">
                         <p>วันที่แจ้ง : ${date}</p>
@@ -175,6 +173,44 @@ fetch(url2)
                                         <p>หน่วยงาน : ${department}</p>
                                         <p>เบอร์ติดต่อ : ${contact}</p>
                                         <p>รายการแจ้งซ่อม : ${issue}</p>
+                                        <hr>
+                                    <div class="from">
+                                        <div class="form">
+                                            <form action="">
+                                                ผลการซ่อม :
+                                                <input type="radio" id="doneRadio${index}" name="status${index}" value="done"
+                                                    onclick="showFormsuccess(${index})" />
+                                                <label for="doneRadio${index}">ดำเนินการเสร็จเรียบร้อย</label>
+
+                                                <input type="radio" id="notdoneRadio${index}" name="status${index}" value="notdone"
+                                                    onclick="showFormunsuccess(${index})" />
+                                                <label for="notdoneRadio${index}">ไม่สามารถดำเนินการได้</label>
+                                            </form>
+
+                                            <!-- ฟอร์มสำเร็จ -->
+                                            <div id="formContainer${index}" style="display:none;">
+                                                <label class="descriction" for="detail${index}">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
+                                                <textarea id="detail${index}" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="equipment${index}">อุปกรณ์ที่ใช้:</label><br>
+                                                <textarea id="equipment${index}" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="worktype${index}">ประเภทงาน:</label><br>
+                                                <textarea id="worktype${index}" rows="1" style="width: 100%; object-fit: cover;"></textarea>
+                                                
+                                            </div>
+                                            <!-- ฟอร์มไม่สำเร็จ -->
+                                            <div id="formContainernot${index}" style="display:none;">
+                                                <label class="descriction"
+                                                    for="detailnot${index}">รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
+                                                <textarea id="detailnot${index}" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="worktypenot${index}">ประเภทงาน:</label><br>
+                                                <textarea id="worktypenot${index}" rows="1" style="width: 100%; object-fit: cover;"></textarea>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
@@ -195,32 +231,17 @@ fetch(url2)
       "<p>โหลดข้อมูลไม่สำเร็จ</p>";
   });
 
-
 //แสดงฟอร์มดำเนินการเสร็จสิ้น
-function showFormsuccess() {
-  const doneRadio = document.getElementById('doneRadio');
-  const form = document.getElementById('formContainer');
-  const formnot = document.getElementById('formContainernot');
-
-  if (doneRadio.checked) {
-    form.style.display = 'block';
-    formnot.style.display = 'none';
-  } else {
-    form.style.display = 'none';
-  }
+function showFormsuccess(index) {
+    // ซ่อนฟอร์ม "ไม่สำเร็จ"
+    document.getElementById(`formContainernot${index}`).style.display = 'none';
+    // แสดงฟอร์ม "สำเร็จ"
+    document.getElementById(`formContainer${index}`).style.display = 'block';
 }
 
-//แสดงฟอร์มดำเนินการไม่สำเร็จ
-function showFormunsuccess() {
-  const notdoneRadio = document.getElementById('notdoneRadio');
-  const form = document.getElementById('formContainer');
-  const formnot = document.getElementById('formContainernot');
-
-  if (notdoneRadio.checked) {
-    formnot.style.display = 'block';
-    form.style.display = 'none';
-  } else {
-    formnot.style.display = 'none';
-  }
+function showFormunsuccess(index) {
+    // ซ่อนฟอร์ม "สำเร็จ"
+    document.getElementById(`formContainer${index}`).style.display = 'none';
+    // แสดงฟอร์ม "ไม่สำเร็จ"
+    document.getElementById(`formContainernot${index}`).style.display = 'block';
 }
-
