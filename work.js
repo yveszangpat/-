@@ -20,12 +20,41 @@ fetch(url)
         status = "รอดำเนินการ";
       }
       total++;
-      if(status === "รอดำเนินการ") pending++;
-      else if(status === "กำลังดำเนินการ") inprogress++;
-      else if(status === "เสร็จสิ้น") done++;
+      if (status === "รอดำเนินการ") pending++;
+      else if (status === "กำลังดำเนินการ") inprogress++;
+      else if (status === "เสร็จสิ้น") done++;
     });
     document.getElementById("totalTasks").textContent = total;
     document.getElementById("pendingTasks").textContent = pending;
     document.getElementById("inprogressTasks").textContent = inprogress;
     document.getElementById("doneTasks").textContent = done;
   });
+
+
+//แสดงฟอร์มดำเนินการเสร็จสิ้น
+function showFormsuccess() {
+  const doneRadio = document.getElementById('doneRadio');
+  const form = document.getElementById('formContainer');
+  const formnot = document.getElementById('formContainernot');
+
+  if (doneRadio.checked) {
+    form.style.display = 'block';
+    formnot.style.display = 'none';
+  } else {
+    form.style.display = 'none';
+  }
+}
+
+//แสดงฟอร์มดำเนินการไม่สำเร็จ
+function showFormunsuccess() {
+  const notdoneRadio = document.getElementById('notdoneRadio');
+  const form = document.getElementById('formContainer');
+  const formnot = document.getElementById('formContainernot');
+
+  if (notdoneRadio.checked) {
+    formnot.style.display = 'block';
+    form.style.display = 'none';
+  } else {
+    formnot.style.display = 'none';
+  }
+}

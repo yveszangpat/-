@@ -23,6 +23,31 @@
             margin-bottom: 0;
             /* ไม่มีระยะห่างข้างล่าง */
         }
+
+        #detail {
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .descriction {
+            margin-top: 5px;
+        }
+
+        .inputname {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .dt {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+
     </style>
 
     <div>
@@ -31,14 +56,14 @@
 
     <div class="row justify-content-center">
 
-        <!-- <div class="col-sm-2 mb-3">
+        <div class="col-sm-2 mb-3">
             <div class="card">
                 <div class="card-body">
                     <h3 class="text-center" id="totalTasks">0</h3>
                     <p class="card-text text-center">งานทั้งหมด</p>
                 </div>
             </div>
-        </div> -->
+        </div>
         <div class="col-sm-2 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -96,26 +121,66 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg" class="card-img-top" alt="...">
+                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
+                                        class="card-img-top" alt="...">
                                     <p class="mt-2">วันที่แจ้ง : </p>
                                     <p class="card-title">อาคาร : </p>
-                                    <p>ชั้น : </p>    
+                                    <p>ชั้น : </p>
                                     <p>หน่วยงาน : </p>
                                     <p>เบอร์ติดต่อ: </p>
                                     <p class="mb-2">รายการปัญหา : </p>
                                     <hr>
                                     <div class="from">
-                                        <form action="">
-                                            ผลการซ่อม : <input type="radio" id="" name="" value=""> <label for="">ดําเนินการเสร็จเรียบร้อย</label>
-                                        </form>
+                                        <div class="form">
+                                            <form action="">
+                                                ผลการซ่อม :
+                                                <input type="radio" id="doneRadio" name="status" value="done"
+                                                    onclick="showFormsuccess()" />
+                                                <label for="doneRadio">ดำเนินการเสร็จเรียบร้อย</label>
+
+                                                <input type="radio" id="notdoneRadio" name="status" value="notdone"
+                                                    onclick="showFormunsuccess()" />
+                                                <label for="notDoneRadio">ไม่สามารถดำเนินการได้</label>
+                                            </form>
+
+                                            <!-- ฟอร์มสำเร็จ -->
+                                            <div id="formContainer" style="display:none;">
+                                                <label
+                                                    class="descriction" "detail">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
+                                                <textarea id="detail" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="detail">อุปกรณ์ที่ใช้:</label><br>
+                                                <textarea id="detail" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="detail">ลงชื่อผู้ปฏิบัติงาน:</label><br>
+                                                <input class="inputname" type="text" id="name" name="name"
+                                                    placeholder="ชื่อ"> <br>
+                                                <label for="detail">วันที่ปฏิบัติงาน:</label><br>
+                                                <input class="dt" type="date" id="date" name="date"
+                                                    placeholder="วันที่">
+                                            </div>
+                                            <!-- ฟอร์มไม่สำเร็จ -->
+                                            <div id="formContainernot" style="display:none;">
+                                                <label class="descriction"
+                                                    for="detail">รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
+                                                <textarea id="detail" rows="2"
+                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label for="detail">ลงชื่อผู้ปฏิบัติงาน:</label><br>
+                                                <input class="inputname" type="text" id="namenot" name="name"
+                                                    placeholder="ชื่อ"> <br>
+                                                <label for="detail">วันที่ปฏิบัติงาน:</label><br>
+                                                <input class="dt" type="date" id="date" name="date"
+                                                    placeholder="วันที่">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">ปิด</button>
+                                <div class=" modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
                                     <button type="button" class="btn btn-primary">ยืนยัน</button>
                                 </div>
                             </div>
