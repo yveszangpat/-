@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+
+    <script src="work.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <title>Document</title>
+</head>
+
+<body class="container">
+    <style>
+        .card-body p {
+            margin-bottom: 0;
+            /* ไม่มีระยะห่างข้างล่าง */
+        }
+    </style>
+
+    <div>
+        <h1 class="text-center mt-4">ระบบจัดการงานซ่อม</h1>
+    </div>
+
+    <div class="row justify-content-center">
+
+        <div class="col-sm-2 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="totalTasks">0</h3>
+                    <p class="card-text text-center">งานทั้งหมด</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="pendingTasks">0</h3>
+                    <p class="card-text text-center">รอดำเนินการ</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="inprogressTasks">0</h3>
+                    <p class="card-text text-center">กำลังดำเนินการ</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="doneTasks">0</h3>
+                    <p class="card-text text-center">เสร็จสิ้น</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-secondary ">ทั้งหมด</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">รอดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">กำลังดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">เสร็จสิ้น</button>
+    </div> -->
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        <div class="col">
+            <div class="card">
+                <div class="image-wrapper" style="position: relative;">
+                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
+                        class="card-img-top" alt="...">
+                    <span class="status-badge">รอดำเนินการ</span>
+                </div>
+                <div class="card-body">
+                    <p>วันที่แจ้ง : </p>
+                    <p class="card-title">อาคาร : </p>
+                    <p>ชั้น : </p>
+                    <p>หน่วยงาน : </p>
+                    <p>เบอร์ติดต่อ: </p>
+                    <p class="mb-2">รายการปัญหา : </p>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">
+                        รับงาน
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg" class="card-img-top" alt="...">
+                                    <p class="mt-2">วันที่แจ้ง : </p>
+                                    <p class="card-title">อาคาร : </p>
+                                    <p>ชั้น : </p>    
+                                    <p>หน่วยงาน : </p>
+                                    <p>เบอร์ติดต่อ: </p>
+                                    <p class="mb-2">รายการปัญหา : </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">ปิด</button>
+                                    <button type="button" class="btn btn-primary">ยืนยัน</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="https://img.kapook.com/u/surauch/movie3/shutterstock_109439771.jpg" class="card-img-top"
+                    alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">อาคาร ชั้น</h5>
+                    <p class="card-text">รายการแจ้งซ่อม</p>
+                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
+                    <a href="#" class="btn btn-primary">รับงาน</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
+                    class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">อาคาร ชั้น</h5>
+                    <p class="card-text">รายการแจ้งซ่อม</p>
+                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
+                    <a href="#" class="btn btn-primary">รับงาน</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
+                    class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">อาคาร ชั้น</h5>
+                    <p class="card-text">รายการแจ้งซ่อม</p>
+                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
+                    <a href="#" class="btn btn-primary">รับงาน</a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+    </div>
+
+    </div>
+</body>
+
+</html>
