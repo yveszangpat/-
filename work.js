@@ -26,7 +26,7 @@ fetch(url)
       }
       total++;
       if (status === "รอดำเนินการ") pending++;
-      else if (status === "กำลังดำเนินการ") inprogress++;
+      // else if (status === "กำลังดำเนินการ") inprogress++;
       else if (status === "เสร็จสิ้น") done++;
     });
     document.getElementById("totalTasks").textContent = total;
@@ -134,94 +134,6 @@ fetch(url2)
 
       const modalId = `modal${index}`;
 
-
-      const card = `
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="image-wrapper">
-                      <img src="${imageSrc}" class="card-img-top" alt="รูปภาพแจ้งซ่อม">
-                      <span class="status-badge">${status}</span>
-                    </div>
-                    <div class="card-body">
-                        <p>วันที่แจ้ง : ${date}</p>
-                        <p>เวลาที่แจ้ง : ${time}</p>
-                        <p class="card-title">อาคาร : ${building}</p>
-                        <p>ชั้น : ${floor}</p>
-                        <p>หน่วยงานผู้แจ้ง : ${department}</p>
-                        <p>เบอร์ภายในที่ติดต่อ : ${contact}</p>
-                        <p class="mb-2">รายการแจ้งซ่อม : ${issue}</p>
-
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">
-                            รับงาน
-                        </button>
-
-                        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="${modalId}Label">รายละเอียดแจ้งซ่อม</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                       <div class="image-wrapper">
-                                          <img src="${imageSrc}" class="card-img-top" alt="รูปภาพแจ้งซ่อม">
-                                          <span class="status-badge">${status}</span>
-                                        </div>
-                                        <p>วันที่แจ้ง : ${date}</p>
-                                        <p>เวลาที่แจ้ง : ${time}</p>
-                                        <p>อาคาร : ${building}</p>
-                                        <p>ชั้น : ${floor}</p>
-                                        <p>หน่วยงาน : ${department}</p>
-                                        <p>เบอร์ติดต่อ : ${contact}</p>
-                                        <p>รายการแจ้งซ่อม : ${issue}</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary">ยืนยัน</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-      container.innerHTML += card;
-    });
-  })
-  .catch((err) => {
-    console.error("เกิดข้อผิดพลาด:", err);
-    document.getElementById("card-container").innerHTML =
-      "<p>โหลดข้อมูลไม่สำเร็จ</p>";
-  });
-
-
-//แสดงฟอร์มดำเนินการเสร็จสิ้น
-function showFormsuccess() {
-  const doneRadio = document.getElementById('doneRadio');
-  const form = document.getElementById('formContainer');
-  const formnot = document.getElementById('formContainernot');
-
-  if (doneRadio.checked) {
-    form.style.display = 'block';
-    formnot.style.display = 'none';
-  } else {
-    form.style.display = 'none';
-  }
-}
-
-//แสดงฟอร์มดำเนินการไม่สำเร็จ
-function showFormunsuccess() {
-  const notdoneRadio = document.getElementById('notdoneRadio');
-  const form = document.getElementById('formContainer');
-  const formnot = document.getElementById('formContainernot');
-
-  if (notdoneRadio.checked) {
-    formnot.style.display = 'block';
-    form.style.display = 'none';
-  } else {
-    formnot.style.display = 'none';
-  }
-}
 
 
 // ส่งข้อมูลเมื่อกดยืนยัน

@@ -32,6 +32,20 @@
         .descriction {
             margin-top: 5px;
         }
+
+        .inputname {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .dt {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
     </style>
 
     <div>
@@ -68,9 +82,27 @@
         </div>
 
     </div>
+
+
+    <!-- <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-secondary ">ทั้งหมด</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">รอดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">กำลังดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">เสร็จสิ้น</button>
+    </div> -->
+
+
+    <div class="container mt-4">
+        <div class="row" id="card-container">
+            <!-- Card ทั้งหมดจะมาแสดงที่นี่ -->
+        </div>
+    </div>
+
+
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
-        
+
         <div class="col">
             <div class="card">
                 <div class="image-wrapper" style="position: relative;">
@@ -92,81 +124,16 @@
                         data-bs-target="#staticBackdrop">
                         รับงาน
                     </button>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
-                                        class="card-img-top" alt="...">
-                                    <p class="mt-2">วันที่แจ้ง : </p>
-                                    <p class="card-title">อาคาร : </p>
-                                    <p>ชั้น : </p>
-                                    <p>หน่วยงาน : </p>
-                                    <p>เบอร์ติดต่อ: </p>
-                                    <p class="mb-2">รายการปัญหา : </p>
-                                    <hr>
-                                    <div class="from">
-                                        <div class="form">
-                                            <form action="">
-                                                ผลการซ่อม :
-                                                <input type="radio" id="doneRadio" name="status" value="done"
-                                                    onclick="showFormsuccess()" />
-                                                <label for="doneRadio">ดำเนินการเสร็จเรียบร้อย</label>
-
-                                                <input type="radio" id="notdoneRadio" name="status" value="notdone"
-                                                    onclick="showFormunsuccess()" />
-                                                <label for="notDoneRadio">ไม่สามารถดำเนินการได้</label>
-                                            </form>
-
-                                            <!-- ฟอร์มสำเร็จ -->
-                                            <div id="formContainer" style="display:none;">
-                                                <label>รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
-                                                <textarea required id="detailDone" rows="2"
-                                                    style="width: 100%;"></textarea>
-
-                                                <label>อุปกรณ์ที่ใช้:</label><br>
-                                                <textarea required id="equipmentDone" rows="2"
-                                                    style="width: 100%;"></textarea>
-
-                                                <label>ประเภทงาน:</label><br>
-                                                <textarea required id="jobTypeDone" rows="1"
-                                                    style="width: 100%;"></textarea>
-                                            </div>
-
-                                            <!-- ฟอร์มไม่สำเร็จ -->
-                                            <div id="formContainernot" style="display:none;">
-                                                <label>รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
-                                                <textarea required id="cannotFix" rows="2"
-                                                    style="width: 100%;"></textarea>
-
-                                                <label>ประเภทงาน:</label><br>
-                                                <textarea required id="jobTypeNotDone" rows="1"
-                                                    style="width: 100%;"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=" modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                    <button type="button" class="btn btn-primary" id="confirmBtn">ยืนยัน</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
             </div>
         </div>
 
+
+
+
+    </div>
+
+    </div>
 </body>
 
 </html>
