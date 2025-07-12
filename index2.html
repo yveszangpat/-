@@ -31,14 +31,15 @@
 
     <div class="row justify-content-center">
 
-        <!-- <div class="col-sm-2 mb-3">
+        <div class="col-sm-2 mb-3" style="display: none;">
             <div class="card">
                 <div class="card-body">
                     <h3 class="text-center" id="totalTasks">0</h3>
                     <p class="card-text text-center">งานทั้งหมด</p>
                 </div>
             </div>
-        </div> -->
+        </div>
+
         <div class="col-sm-2 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -47,14 +48,14 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="col-sm-2">
+        <div class="col-sm-2" style="display: none;">
             <div class="card">
                 <div class="card-body">
                     <h3 class="text-center" id="inprogressTasks">0</h3>
                     <p class="card-text text-center">กำลังดำเนินการ</p>
                 </div>
             </div>
-        </div> -->
+        </div>
         <div class="col-sm-2">
             <div class="card">
                 <div class="card-body">
@@ -66,6 +67,7 @@
 
     </div>
 
+    
     <!-- <div class="text-center mt-4">
         <button type="button" class="btn btn-outline-secondary ">ทั้งหมด</button>
         <button type="button" class="btn btn-outline-secondary ms-1">รอดำเนินการ</button>
@@ -73,8 +75,18 @@
         <button type="button" class="btn btn-outline-secondary ms-1">เสร็จสิ้น</button>
     </div> -->
 
+
+    <div class="container mt-4">
+    <div class="row" id="card-container">
+      <!-- Card ทั้งหมดจะมาแสดงที่นี่ -->
+    </div>
+  </div>
+
+  
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
+        
         <div class="col">
             <div class="card">
                 <div class="image-wrapper" style="position: relative;">
@@ -84,11 +96,12 @@
                 </div>
                 <div class="card-body">
                     <p>วันที่แจ้ง : </p>
+                    <p>เวลาที่แจ้ง : </p>
                     <p class="card-title">อาคาร : </p>
                     <p>ชั้น : </p>
-                    <p>หน่วยงาน : </p>
-                    <p>เบอร์ติดต่อ: </p>
-                    <p class="mb-2">รายการปัญหา : </p>
+                    <p>หน่วยงานผู้แจ้ง : </p>
+                    <p>เบอร์ภายในที่ติดต่อ : </p>
+                    <p class="mb-2">รายการแจ้งซ่อม : </p>
 
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -103,26 +116,42 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg" class="card-img-top" alt="...">
-                                    <p class="mt-2">วันที่แจ้ง : </p>
+                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
+                                        class="card-img-top" alt="...">
+                                    <p>วันที่แจ้ง : </p>
+                                    <p>เวลาที่แจ้ง : </p>
                                     <p class="card-title">อาคาร : </p>
-                                    <p>ชั้น : </p>    
-                                    <p>หน่วยงาน : </p>
-                                    <p>เบอร์ติดต่อ: </p>
-                                    <p class="mb-2">รายการปัญหา : </p>
+                                    <p>ชั้น : </p>
+                                    <p>หน่วยงานผู้แจ้ง : </p>
+                                    <p>เบอร์ภายในที่ติดต่อ : </p>
+                                    <p class="mb-2">รายการแจ้งซ่อม : </p>
                                     <hr>
                                     <div class="from">
                                         <form action="">
-                                            ผลการซ่อม : <input type="radio" id="" name="" value=""> <label for="">ดําเนินการเสร็จเรียบร้อย</label>
+                                            ผลการซ่อม
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                    id="flexRadioDefault1">
+                                                <label class="form-check-label" for="flexRadioDefault1">
+                                                    ดําเนินการเสร็จเรียบร้อย
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                    id="flexRadioDefault2" checked>
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                    ไม่สามารถดําเนินการได้
+                                                </label>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">ปิด</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
                                     <button type="button" class="btn btn-primary">ยืนยัน</button>
                                 </div>
                             </div>
