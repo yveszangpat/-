@@ -230,6 +230,18 @@ function loadTasks() {
 
       allTasksData = rows;
       container.innerHTML = '';
+      allTasksData = rows;
+
+      rows.sort((a, b) => {
+        const getDate = (val) => {
+          const raw = val?.c?.[0]?.v;
+          if (typeof raw === "string" && raw.includes("Date(")) {
+            return parseGoogleDateString(raw);
+          }
+          return new Date(raw);
+        };
+        return getDate(b) - getDate(a);
+      });
 
       rows.forEach((row, index) => {
         const [
@@ -373,7 +385,7 @@ function loadTasks() {
     });
 }
 
-// ฟังก์ชันอื่นๆ ยังคงเหมือนเดิม
+
 function showFormsuccess(index) {
   document.getElementById(`formContainernot${index}`).style.display = 'none';
   document.getElementById(`formContainer${index}`).style.display = 'block';
