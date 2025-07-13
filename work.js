@@ -288,3 +288,84 @@ function submitForm(index, rowIndex) {
       alert("❌ ไม่สามารถเชื่อมต่อกับระบบได้");
     });
 }
+
+
+
+let chartInstance;
+
+function toggleChart() {
+  const chartDiv = document.getElementById("chartContainer");
+
+  if (chartDiv.style.display === "none") {
+    chartDiv.style.display = "block";
+
+    fetch(url2)
+      .then(res => res.text())
+      .then(rep => {
+        const data = JSON.parse(rep.substr(47).slice(0, -2));
+        const rows = data.table.rows;
+
+        // หาคอลัมน์ชื่อ "ประเภทงาน"
+        const colIndex = data.table.cols.findIndex(col => col.label === "ประเภทงาน");
+        if (colIndex === -1) {
+          alert("ไม่พบคอลัมน์ประเภทงาน");
+          return;
+        }
+
+        // นับจำนวนประเภทงาน
+        const typeCounts = {};
+        rows.forEach(row => {
+          const value = row.c[colIndex]?.v?.trim();
+          if (value) {
+            typeCounts[value] = (typeCounts[value] || 0) + 1;
+          }
+        });
+
+        // สร้างกราฟ
+        const labels = Object.keys(typeCounts);
+        const counts = Object.values(typeCounts);
+
+        const ctx = document.getElementById("workTypeChart").getContext("2d");
+
+        if (chartInstance) chartInstance.destroy(); // ลบกราฟเก่าหากมี
+        chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'ประเภทงาน',
+              data: counts,
+              backgroundColor: [
+                '#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8',
+                '#6f42c1', '#fd7e14', '#20c997', '#6c757d', '#343a40'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'สถิติตามประเภทงาน' }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                  precision: 0 // บังคับให้เป็นเลขจำนวนเต็ม
+                }
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error("โหลดข้อมูลประเภทงานล้มเหลว:", err);
+        alert("เกิดข้อผิดพลาดในการโหลดประเภทงาน");
+      });
+
+  } else {
+    chartDiv.style.display = "none";
+  }
+}
