@@ -132,7 +132,7 @@ fetch(url2)
       console.log("imageSrc:", imageSrc);
 
       const modalId = `modal${index}`;
-
+      const rowIndex = index + 2;
       const card = `
             <div class="col-md-4 mb-4">
                 <div class="card">
@@ -189,7 +189,7 @@ fetch(url2)
                                             <!-- ฟอร์มสำเร็จ -->
                                             <div id="formContainer${index}" style="display:none;">
                                                 <label class="descriction" for="detail${index}">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
-                                                <textarea id="repairDetail${index}" rows="2"
+                                                <textarea id="detail${index}" rows="2"
                                                     style="width: 100%; object-fit: cover;"></textarea>
                                                 <label for="equipment${index}">อุปกรณ์ที่ใช้:</label><br>
                                                 <textarea id="equipment${index}" rows="2"
@@ -213,7 +213,7 @@ fetch(url2)
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary" onclick="submitForm(${index})">ยืนยัน</button>
+                                        <button button class="btn btn-primary" onclick = "submitForm(${index}, ${rowIndex})" > ยืนยัน</button >
                                     </div>
                                 </div>
                             </div>
@@ -244,7 +244,7 @@ function showFormunsuccess(index) {
 
 
 
-function submitForm(index) {
+function submitForm(index, rowIndex) {
   const selectedStatus = document.querySelector(`input[name="status${index}"]:checked`)?.value;
 
   if (!selectedStatus) {
@@ -252,32 +252,36 @@ function submitForm(index) {
     return;
   }
 
-  const data = { status: selectedStatus };
+  const data = {
+    status: selectedStatus,
+    rowIndex: rowIndex
+  };
 
   if (selectedStatus === "done") {
-    data.repairDetail = document.getElementById(`repairDetail${index}`)?.value.trim() || "-";
+    data.detail = document.getElementById(`detail${index}`)?.value.trim() || "-";
     data.equipment = document.getElementById(`equipment${index}`)?.value.trim() || "-";
     data.jobType = document.getElementById(`worktype${index}`)?.value.trim() || "-";
   } else if (selectedStatus === "notdone") {
+    data.detail = "-";
+    data.equipment = "-";
     data.cannotFix = document.getElementById(`detailnot${index}`)?.value.trim() || "-";
     data.jobType = document.getElementById(`worktypenot${index}`)?.value.trim() || "-";
   }
+  console.log("Sending data:", data);
 
-  fetch("https://script.google.com/macros/s/AKfycbze5GFwNFjgwpWQZsWJlfqV7vPg5_LRfM-xH_Xq4YWgbWgwZAzq9Xdk2FS5GqHDCaIFdA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwtAQuDSVDBIpm3ZaK7Dg-zGoSl0jOpbS_8fdK_11Rd4uzqNX0XGZvye2gesZsNewaoBw/exec", {
     method: "POST",
+    mode: "no-cors",
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json"
     }
   })
-    .then(res => res.json())
-    .then(response => {
-      if (response.result === "success") {
-        alert("✅ บันทึกข้อมูลเรียบร้อย");
-        location.reload();
-      } else {
-        alert("❌ เกิดข้อผิดพลาดในการบันทึก");
-      }
+    .then(() => {
+      alert("✅ บันทึกข้อมูลเรียบร้อย");
+      const modal = bootstrap.Modal.getInstance(document.getElementById(`modal${index}`));
+      if (modal) modal.hide();
+      location.reload();
     })
     .catch(err => {
       console.error("Error:", err);
