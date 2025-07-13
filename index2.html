@@ -89,6 +89,22 @@
         <canvas id="workTypeChart"></canvas>
     </div>
 
+    <div class="filter-section mb-4">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary filter-btn active" id="filter-all"
+                onclick="filterTasks('all')">
+                ทั้งหมด
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-pending"
+                onclick="filterTasks('pending')">
+                รอดำเนินการ
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-done"
+                onclick="filterTasks('done')">
+                เสร็จสิ้น
+            </button>
+        </div>
+    </div>
 
 
     <!-- <div class="text-center mt-4">

@@ -8,37 +8,76 @@ const url2 = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${
 // ชื่อหัว column สถานะ
 const STATUS_COL_NAME = "สถานะ";
 
-fetch(url)
-  .then((res) => res.text())
-  .then((text) => {
-    const json = JSON.parse(text.substring(47).slice(0, -2));
-    const cols = json.table.cols.map((col) => col.label);
-    const statusColIndex = cols.indexOf(STATUS_COL_NAME);
-    let total = 0,
-      pending = 0,
-      inprogress = 0,
-      done = 0;
-    json.table.rows.forEach((row) => {
-      // ถ้า cell ว่าง/null ให้ถือว่า "รอดำเนินการ"
-      let status = row.c[statusColIndex]?.v;
-      if (!status || status.trim() === "") {
-        status = "รอดำเนินการ";
-      }
-      total++;
-      if (status === "รอดำเนินการ") pending++;
-      // else if (status === "กำลังดำเนินการ") inprogress++;
-      else if (status === "เสร็จสิ้น") done++;
+// ตัวแปรเก็บข้อมูลทั้งหมด
+let allTasksData = [];
+let currentFilter = 'all';
+
+// ฟังก์ชันอัปเดตสถิติ
+function updateStats() {
+  fetch(url)
+    .then((res) => res.text())
+    .then((text) => {
+      const json = JSON.parse(text.substring(47).slice(0, -2));
+      const cols = json.table.cols.map((col) => col.label);
+      const statusColIndex = cols.indexOf(STATUS_COL_NAME);
+      let total = 0,
+        pending = 0,
+        inprogress = 0,
+        done = 0;
+      json.table.rows.forEach((row) => {
+        let status = row.c[statusColIndex]?.v;
+        if (!status || status.trim() === "") {
+          status = "รอดำเนินการ";
+        }
+        total++;
+        if (status === "รอดำเนินการ") pending++;
+        else if (status === "เสร็จสิ้น") done++;
+      });
+      document.getElementById("totalTasks").textContent = total;
+      document.getElementById("pendingTasks").textContent = pending;
+      document.getElementById("doneTasks").textContent = done;
     });
-    document.getElementById("totalTasks").textContent = total;
-    document.getElementById("pendingTasks").textContent = pending;
-    document.getElementById("doneTasks").textContent = done;
+}
+
+// ฟังก์ชันฟิลเตอร์ข้อมูล
+function filterTasks(status) {
+  currentFilter = status;
+  const cards = document.querySelectorAll('#card-container .col-md-4');
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
   });
+  document.getElementById(`filter-${status}`).classList.add('active');
+
+  cards.forEach(card => {
+    const statusBadge = card.querySelector('.status-badge');
+    const cardStatus = statusBadge ? statusBadge.textContent.trim() : 'รอดำเนินการ';
+
+    if (cardStatus === 'เสร็จสิ้น') {
+      statusBadge.style.backgroundColor = 'red';
+      statusBadge.style.color = 'white';
+    } else {
+      statusBadge.style.backgroundColor = '#ddd';
+      statusBadge.style.color = '#333';
+    }
+
+    if (status === 'all') {
+      card.style.display = 'block';
+    } else if (status === 'pending' && cardStatus === 'รอดำเนินการ') {
+      card.style.display = 'block';
+    } else if (status === 'done' && cardStatus === 'เสร็จสิ้น') {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
 
 function formatThaiDateTime(datetime) {
   if (!(datetime instanceof Date)) return { date: "-", time: "-" };
 
   const day = datetime.getDate();
-  const month = datetime.getMonth() + 1; // JavaScript นับเดือนจาก 0
+  const month = datetime.getMonth() + 1;
   const year = datetime.getFullYear();
   const hours = datetime.getHours().toString().padStart(2, "0");
   const minutes = datetime.getMinutes().toString().padStart(2, "0");
@@ -72,68 +111,175 @@ function parseGoogleDateString(dateStr) {
   return new Date(year, month, day, hour, minute, second);
 }
 
-fetch(url2)
-  .then((res) => res.text())
-  .then((rep) => {
-    const data = JSON.parse(rep.substr(47).slice(0, -2));
-    const rows = data.table.rows;
-    const container = document.getElementById("card-container");
+// ฟังก์ชันสร้าง PDF
+function generatePDF(rowData, index) {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังสร้าง PDF...';
+  button.disabled = true;
 
-    if (!rows.length) {
-      container.innerHTML = "<p>ไม่พบข้อมูล</p>";
-      return;
-    }
+  // ดึงข้อมูลจาก rowData
+  const [
+    timestampRaw, building, floor, department, contact,
+    issue, imgURL, status, detail, equipment, cannotFix, jobType, sequence
+  ] = rowData.c.map((cell) => (cell ? cell.v : ""));
 
-    rows.forEach((row, index) => {
-      const [
-        timestampRaw,
-        building,
-        floor,
-        department,
-        contact,
-        issue,
-        imgURL,
-        status,
-      ] = row.c.map((cell) => (cell ? cell.v : ""));
+  const timestamp = typeof timestampRaw === "string" && timestampRaw.includes("Date(")
+    ? parseGoogleDateString(timestampRaw)
+    : new Date(timestampRaw);
 
-      const displayStatus = status ? status : "รอดำเนินการ";
+  const { date, time } = formatThaiDateTime(timestamp);
 
-      const timestamp =
-        typeof timestampRaw === "string" && timestampRaw.includes("Date(")
+  const data = {
+    date: date,
+    time: time.replace(' น.', ''),
+    building: building || '-',
+    floor: floor || '-',
+    department: department || '-',
+    contact: contact || '-',
+    issue: issue || '-',
+    detail: detail || '-',
+    equipment: equipment || '-',
+    cannotFix: cannotFix || '-',
+    jobType: jobType || '-',
+    sequence: sequence || index + 1
+  };
+
+  // ใช้ JSONP แทน fetch
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJkJuQCiM-ofuh_KYkCC7Espw7vksWNKUhvma06w_ocPLjDkcA_7ZAsLum0aSRwK957Q/exec';
+
+  sendDataWithJSONP(SCRIPT_URL, data)
+    .then(result => {
+      if (result.success) {
+        alert(`✅ สร้าง PDF เรียบร้อย!\nเลขที่เอกสาร: ${result.documentNumber}`);
+
+        // ดาวน์โหลดไฟล์
+        const link = document.createElement('a');
+        link.href = result.downloadUrl;
+        link.download = `ใบแจ้งซ่อม_${result.documentNumber}_${building}_${floor}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+      } else {
+        alert('❌ เกิดข้อผิดพลาดในการสร้าง PDF: ' + result.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message);
+    })
+    .finally(() => {
+      button.innerHTML = originalText;
+      button.disabled = false;
+    });
+}
+
+// ฟังก์ชันสำหรับ JSONP
+function sendDataWithJSONP(url, data) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+
+    // สร้าง callback function
+    window[callbackName] = function (response) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(response);
+    };
+
+    // สร้าง script element
+    const script = document.createElement('script');
+    const params = new URLSearchParams();
+    params.append('callback', callbackName);
+    params.append('data', JSON.stringify(data));
+
+    script.src = url + '?' + params.toString();
+    script.onerror = function () {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error('JSONP request failed'));
+    };
+
+    document.body.appendChild(script);
+
+    // Timeout
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        reject(new Error('JSONP request timeout'));
+      }
+    }, 30000);
+  });
+}
+
+
+// ฟังก์ชันโหลดข้อมูลและสร้างการ์ด
+function loadTasks() {
+  fetch(url2)
+    .then((res) => res.text())
+    .then((rep) => {
+      const data = JSON.parse(rep.substr(47).slice(0, -2));
+      const rows = data.table.rows;
+      const container = document.getElementById("card-container");
+
+      if (!rows.length) {
+        container.innerHTML = "<p>ไม่พบข้อมูล</p>";
+        return;
+      }
+
+      allTasksData = rows;
+      container.innerHTML = '';
+
+      rows.forEach((row, index) => {
+        const [
+          timestampRaw,
+          building,
+          floor,
+          department,
+          contact,
+          issue,
+          imgURL,
+          status,
+        ] = row.c.map((cell) => (cell ? cell.v : ""));
+
+        const displayStatus = status ? status : "รอดำเนินการ";
+        const timestamp = typeof timestampRaw === "string" && timestampRaw.includes("Date(")
           ? parseGoogleDateString(timestampRaw)
           : new Date(timestampRaw);
 
-      console.log("imgURL:", imgURL);
+        const { date, time } = formatThaiDateTime(timestamp);
 
-      const { date, time } = formatThaiDateTime(timestamp);
+        function getImageURL(url) {
+          if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
 
-      function getImageURL(url) {
-        if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
+          let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
+          if (match) {
+            return `https://drive.google.com/thumbnail?id=${match[1]}`;
+          }
 
-        // กรณีแบบ open?id=xxxx
-        let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
-        if (match) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}`;
+          match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
+          if (match) {
+            return `https://drive.google.com/thumbnail?id=${match[1]}`;
+          }
+
+          return url;
         }
 
-        // กรณีแบบ /d/xxxx/
-        match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
-        if (match) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}`;
-        }
+        const imageSrc = getImageURL(imgURL);
+        const modalId = `modal${index}`;
+        const rowIndex = index + 2;
 
-        // ถ้าเป็น URL อื่นก็ใช้ตรงๆ
-        return url;
-      }
+        // กำหนดปุ่มตามสถานะ
+        const buttonHTML = displayStatus === "เสร็จสิ้น"
+          ? `<button type="button" class="btn btn-success" onclick="generatePDF(allTasksData[${index}], ${index})">
+               <i class="fas fa-download"></i> โหลด PDF
+             </button>`
+          : `<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">
+               รับงาน
+             </button>`;
 
-      const imageSrc = getImageURL(imgURL);
-
-      console.log("raw imgURL:", imgURL);
-      console.log("imageSrc:", imageSrc);
-
-      const modalId = `modal${index}`;
-      const rowIndex = index + 2;
-      const card = `
+        const card = `
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="image-wrapper">
@@ -149,10 +295,9 @@ fetch(url2)
                         <p>เบอร์ภายในที่ติดต่อ : ${contact}</p>
                         <p class="mb-2">รายการแจ้งซ่อม : ${issue}</p>
 
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">
-                            รับงาน
-                        </button>
+                        ${buttonHTML}
 
+                        ${displayStatus !== "เสร็จสิ้น" ? `
                         <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -163,7 +308,7 @@ fetch(url2)
                                     <div class="modal-body">
                                        <div class="image-wrapper">
                                           <img src="${imageSrc}" class="card-img-top" alt="รูปภาพแจ้งซ่อม">
-                                          <span class="status-badge">${status}</span>
+                                          <span class="status-badge">${displayStatus}</span>
                                         </div>
                                         <p>วันที่แจ้ง : ${date}</p>
                                         <p>เวลาที่แจ้ง : ${time}</p>
@@ -186,51 +331,49 @@ fetch(url2)
                                                 <label for="notdoneRadio${index}">ไม่สามารถดำเนินการได้</label>
                                             </form>
 
-                                            <!-- ฟอร์มสำเร็จ -->
                                             <div id="formContainer${index}" style="display:none;">
                                                 <label class="descriction" for="detail${index}">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
-                                                <textarea id="detail${index}" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <textarea id="detail${index}" rows="2" style="width: 100%; object-fit: cover;"></textarea>
                                                 <label for="equipment${index}">อุปกรณ์ที่ใช้:</label><br>
-                                                <textarea id="equipment${index}" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <textarea id="equipment${index}" rows="2" style="width: 100%; object-fit: cover;"></textarea>
                                                 <label for="worktype${index}">ประเภทงาน:</label><br>
                                                 <textarea id="worktype${index}" rows="1" style="width: 100%; object-fit: cover;"></textarea>
-                                                
                                             </div>
-                                            <!-- ฟอร์มไม่สำเร็จ -->
+                                            
                                             <div id="formContainernot${index}" style="display:none;">
-                                                <label class="descriction"
-                                                    for="detailnot${index}">รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
-                                                <textarea id="detailnot${index}" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
+                                                <label class="descriction" for="detailnot${index}">รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
+                                                <textarea id="detailnot${index}" rows="2" style="width: 100%; object-fit: cover;"></textarea>
                                                 <label for="worktypenot${index}">ประเภทงาน:</label><br>
                                                 <textarea id="worktypenot${index}" rows="1" style="width: 100%; object-fit: cover;"></textarea>
-                                                
                                             </div>
                                         </div>
                                     </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button button class="btn btn-primary" onclick = "submitForm(${index}, ${rowIndex})" > ยืนยัน</button >
+                                        <button class="btn btn-primary" onclick="submitForm(${index}, ${rowIndex})">ยืนยัน</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>`;
-      container.innerHTML += card;
-    });
-  })
-  .catch((err) => {
-    console.error("เกิดข้อผิดพลาด:", err);
-    document.getElementById("card-container").innerHTML =
-      "<p>โหลดข้อมูลไม่สำเร็จ</p>";
-  });
+        container.innerHTML += card;
+      });
 
-//แสดงฟอร์มดำเนินการเสร็จสิ้น
+      if (currentFilter !== 'all') {
+        filterTasks(currentFilter);
+      }
+    })
+    .catch((err) => {
+      console.error("เกิดข้อผิดพลาด:", err);
+      document.getElementById("card-container").innerHTML = "<p>โหลดข้อมูลไม่สำเร็จ</p>";
+    });
+}
+
+// ฟังก์ชันอื่นๆ ยังคงเหมือนเดิม
 function showFormsuccess(index) {
   document.getElementById(`formContainernot${index}`).style.display = 'none';
   document.getElementById(`formContainer${index}`).style.display = 'block';
@@ -241,8 +384,10 @@ function showFormunsuccess(index) {
   document.getElementById(`formContainernot${index}`).style.display = 'block';
 }
 
-
-
+document.addEventListener('DOMContentLoaded', function () {
+  updateStats();
+  loadTasks();
+});
 
 function submitForm(index, rowIndex) {
   const selectedStatus = document.querySelector(`input[name="status${index}"]:checked`)?.value;
@@ -288,7 +433,6 @@ function submitForm(index, rowIndex) {
       alert("❌ ไม่สามารถเชื่อมต่อกับระบบได้");
     });
 }
-
 
 
 let chartInstance;
