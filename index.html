@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+
+    <script src="work.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <title>Document</title>
+</head>
+
+<body class="container">
+    <style>
+        .card-body p {
+            margin-bottom: 0;
+            /* ไม่มีระยะห่างข้างล่าง */
+        }
+
+        #detail {
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .descriction {
+            margin-top: 5px;
+        }
+
+        .inputname {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .dt {
+            margin-top: 5px;
+            border: solid 1px;
+            border-radius: 5px;
+            width: 100%;
+        }
+    </style>
+
+    <div>
+        <h1 class="text-center mt-4">ระบบจัดการงานซ่อม</h1>
+    </div>
+
+    <div class="row justify-content-center">
+
+        <div class="col-sm-2 mb-3">
+
+            <div class="card" style="">
+                <div class="card-body">
+                    <h3 class="text-center" id="totalTasks">0</h3>
+                    <p class="card-text text-center">งานทั้งหมด</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="pendingTasks">0</h3>
+                    <p class="card-text text-center">รอดำเนินการ</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center" id="doneTasks">0</h3>
+                    <p class="card-text text-center">เสร็จสิ้น</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="filter-section mb-4">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary filter-btn active" id="filter-all"
+                onclick="filterTasks('all')">
+                ทั้งหมด
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-pending"
+                onclick="filterTasks('pending')">
+                รอดำเนินการ
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-done"
+                onclick="filterTasks('done')">
+                เสร็จสิ้น
+            </button>
+        </div>
+    </div>
+
+    <!-- <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-secondary ">ทั้งหมด</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">รอดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">กำลังดำเนินการ</button>
+        <button type="button" class="btn btn-outline-secondary ms-1">เสร็จสิ้น</button>
+    </div> -->
+
+
+    <div class="container mt-4">
+        <div class="row" id="card-container">
+            <!-- Card ทั้งหมดจะมาแสดงที่นี่ -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</body>
+
+</html>

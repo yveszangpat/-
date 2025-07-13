@@ -2,13 +2,21 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #28a745; /* สีเขียว */
-    color: #fff;
+    background: #28a745; 
+    color: #fff; 
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.95rem;
     font-weight: bold;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+textarea{
+    margin-top: 5px;
+        border: solid 1px;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 5px;
 }
 
 
