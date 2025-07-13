@@ -149,6 +149,10 @@ fetch(url2)
                         <p>เบอร์ภายในที่ติดต่อ : ${contact}</p>
                         <p class="mb-2">รายการแจ้งซ่อม : ${issue}</p>
 
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">
+                            รับงาน
+                        </button>
+
                         <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -185,7 +189,7 @@ fetch(url2)
                                             <!-- ฟอร์มสำเร็จ -->
                                             <div id="formContainer${index}" style="display:none;">
                                                 <label class="descriction" for="detail${index}">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
-                                                <textarea id="detail${index}" rows="2"
+                                                <textarea id="repairDetail${index}" rows="2"
                                                     style="width: 100%; object-fit: cover;"></textarea>
                                                 <label for="equipment${index}">อุปกรณ์ที่ใช้:</label><br>
                                                 <textarea id="equipment${index}" rows="2"
@@ -209,7 +213,7 @@ fetch(url2)
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary">ยืนยัน</button>
+                                        <button type="button" class="btn btn-primary" onclick="submitForm(${index})">ยืนยัน</button>
                                     </div>
                                 </div>
                             </div>
@@ -228,16 +232,55 @@ fetch(url2)
 
 //แสดงฟอร์มดำเนินการเสร็จสิ้น
 function showFormsuccess(index) {
-  // ซ่อนฟอร์ม "ไม่สำเร็จ"
   document.getElementById(`formContainernot${index}`).style.display = 'none';
-  // แสดงฟอร์ม "สำเร็จ"
   document.getElementById(`formContainer${index}`).style.display = 'block';
 }
 
 function showFormunsuccess(index) {
-  // ซ่อนฟอร์ม "สำเร็จ"
   document.getElementById(`formContainer${index}`).style.display = 'none';
-  // แสดงฟอร์ม "ไม่สำเร็จ"
   document.getElementById(`formContainernot${index}`).style.display = 'block';
 }
 
+
+
+
+function submitForm(index) {
+  const selectedStatus = document.querySelector(`input[name="status${index}"]:checked`)?.value;
+
+  if (!selectedStatus) {
+    alert("กรุณาเลือกผลการซ่อม");
+    return;
+  }
+
+  const data = { status: selectedStatus };
+
+  if (selectedStatus === "done") {
+    data.repairDetail = document.getElementById(`repairDetail${index}`)?.value.trim() || "-";
+    data.equipment = document.getElementById(`equipment${index}`)?.value.trim() || "-";
+    data.jobType = document.getElementById(`worktype${index}`)?.value.trim() || "-";
+  } else if (selectedStatus === "notdone") {
+    data.cannotFix = document.getElementById(`detailnot${index}`)?.value.trim() || "-";
+    data.jobType = document.getElementById(`worktypenot${index}`)?.value.trim() || "-";
+  }
+
+  fetch("https://script.google.com/macros/s/AKfycbze5GFwNFjgwpWQZsWJlfqV7vPg5_LRfM-xH_Xq4YWgbWgwZAzq9Xdk2FS5GqHDCaIFdA/exec", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.json())
+    .then(response => {
+      if (response.result === "success") {
+        alert("✅ บันทึกข้อมูลเรียบร้อย");
+        location.reload();
+      } else {
+        alert("❌ เกิดข้อผิดพลาดในการบันทึก");
+      }
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      alert("❌ ไม่สามารถเชื่อมต่อกับระบบได้");
+    });
+}
