@@ -232,6 +232,19 @@ function loadTasks() {
       container.innerHTML = '';
       
 
+      allTasksData = rows;
+
+      rows.sort((a, b) => {
+        const getDate = (val) => {
+          const raw = val?.c?.[0]?.v;
+          if (typeof raw === "string" && raw.includes("Date(")) {
+            return parseGoogleDateString(raw);
+          }
+          return new Date(raw);
+        };
+        return getDate(b) - getDate(a);
+      });
+
       rows.forEach((row, index) => {
         const [
           timestampRaw,
