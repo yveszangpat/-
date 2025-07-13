@@ -26,3 +26,21 @@
     object-fit: cover; /* สำคัญ: ป้องกันอัตราส่วนเพี้ยน */
     object-position: center;
 }
+
+
+.status-pending {
+    background-color: #6c757d; /* สีเทา (รอดำเนินการ) */
+}
+
+.status-inprogress {
+    background-color: #0d6efd; /* สีน้ำเงิน (กำลังดำเนินการ) */
+}
+
+.status-done {
+    background-color: #198754; /* สีเขียว (เสร็จสิ้น) */
+}
+
+.status-failed {
+    background-color: #dc3545; /* สีแดง (ไม่สามารถดำเนินการได้) */
+}
+

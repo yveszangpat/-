@@ -8,32 +8,68 @@ const url2 = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${
 // ชื่อหัว column สถานะ
 const STATUS_COL_NAME = "สถานะ";
 
-fetch(url)
-  .then((res) => res.text())
-  .then((text) => {
-    const json = JSON.parse(text.substring(47).slice(0, -2));
-    const cols = json.table.cols.map((col) => col.label);
-    const statusColIndex = cols.indexOf(STATUS_COL_NAME);
-    let total = 0,
-      pending = 0,
-      inprogress = 0,
-      done = 0;
-    json.table.rows.forEach((row) => {
-      // ถ้า cell ว่าง/null ให้ถือว่า "รอดำเนินการ"
-      let status = row.c[statusColIndex]?.v;
-      if (!status || status.trim() === "") {
-        status = "รอดำเนินการ";
-      }
-      total++;
-      if (status === "รอดำเนินการ") pending++;
-      else if (status === "กำลังดำเนินการ") inprogress++;
-      else if (status === "เสร็จสิ้น") done++;
+// ตัวแปรเก็บข้อมูลทั้งหมด
+let allTasksData = [];
+let currentFilter = 'all';
+
+// ฟังก์ชันอัปเดตสถิติ
+function updateStats() {
+  fetch(url)
+    .then((res) => res.text())
+    .then((text) => {
+      const json = JSON.parse(text.substring(47).slice(0, -2));
+      const cols = json.table.cols.map((col) => col.label);
+      const statusColIndex = cols.indexOf(STATUS_COL_NAME);
+      let total = 0,
+        pending = 0,
+        inprogress = 0,
+        done = 0;
+      json.table.rows.forEach((row) => {
+        // ถ้า cell ว่าง/null ให้ถือว่า "รอดำเนินการ"
+        let status = row.c[statusColIndex]?.v;
+        if (!status || status.trim() === "") {
+          status = "รอดำเนินการ";
+        }
+        total++;
+        if (status === "รอดำเนินการ") pending++;
+        else if (status === "กำลังดำเนินการ") inprogress++;
+        else if (status === "เสร็จสิ้น") done++;
+      });
+      document.getElementById("totalTasks").textContent = total;
+      document.getElementById("pendingTasks").textContent = pending;
+      document.getElementById("inprogressTasks").textContent = inprogress;
+      document.getElementById("doneTasks").textContent = done;
     });
-    document.getElementById("totalTasks").textContent = total;
-    document.getElementById("pendingTasks").textContent = pending;
-    document.getElementById("inprogressTasks").textContent = inprogress;
-    document.getElementById("doneTasks").textContent = done;
+}
+
+// ฟังก์ชันฟิลเตอร์ข้อมูล
+function filterTasks(status) {
+  currentFilter = status;
+  const cards = document.querySelectorAll('#card-container .col-md-4');
+  
+  // อัปเดตสถานะปุ่ม
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
   });
+  document.getElementById(`filter-${status}`).classList.add('active');
+  
+  cards.forEach(card => {
+    const statusBadge = card.querySelector('.status-badge');
+    const cardStatus = statusBadge ? statusBadge.textContent.trim() : 'รอดำเนินการ';
+    
+    if (status === 'all') {
+      card.style.display = 'block';
+    } else if (status === 'pending' && cardStatus === 'รอดำเนินการ') {
+      card.style.display = 'block';
+    } else if (status === 'done' && cardStatus === 'เสร็จสิ้น') {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+ 
+}
 
 function formatThaiDateTime(datetime) {
   if (!(datetime instanceof Date)) return { date: "-", time: "-" };
@@ -73,68 +109,68 @@ function parseGoogleDateString(dateStr) {
   return new Date(year, month, day, hour, minute, second);
 }
 
-fetch(url2)
-  .then((res) => res.text())
-  .then((rep) => {
-    const data = JSON.parse(rep.substr(47).slice(0, -2));
-    const rows = data.table.rows;
-    const container = document.getElementById("card-container");
+// ฟังก์ชันโหลดข้อมูลและสร้างการ์ด
+function loadTasks() {
+  fetch(url2)
+    .then((res) => res.text())
+    .then((rep) => {
+      const data = JSON.parse(rep.substr(47).slice(0, -2));
+      const rows = data.table.rows;
+      const container = document.getElementById("card-container");
 
-    if (!rows.length) {
-      container.innerHTML = "<p>ไม่พบข้อมูล</p>";
-      return;
-    }
-
-    rows.forEach((row, index) => {
-      const [
-        timestampRaw,
-        building,
-        floor,
-        department,
-        contact,
-        issue,
-        imgURL,
-        status,
-      ] = row.c.map((cell) => (cell ? cell.v : ""));
-
-      const displayStatus = status ? status : "รอดำเนินการ";
-
-      const timestamp =
-        typeof timestampRaw === "string" && timestampRaw.includes("Date(")
-          ? parseGoogleDateString(timestampRaw)
-          : new Date(timestampRaw);
-
-      console.log("imgURL:", imgURL);
-
-      const { date, time } = formatThaiDateTime(timestamp);
-
-      function getImageURL(url) {
-        if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
-
-        // กรณีแบบ open?id=xxxx
-        let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
-        if (match) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}`;
-        }
-
-        // กรณีแบบ /d/xxxx/
-        match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
-        if (match) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}`;
-        }
-
-        // ถ้าเป็น URL อื่นก็ใช้ตรงๆ
-        return url;
+      if (!rows.length) {
+        container.innerHTML = "<p>ไม่พบข้อมูล</p>";
+        return;
       }
 
-      const imageSrc = getImageURL(imgURL);
+      // เก็บข้อมูลไว้ใน allTasksData
+      allTasksData = rows;
+      container.innerHTML = ''; // ล้างข้อมูลเก่า
 
-      console.log("raw imgURL:", imgURL);
-      console.log("imageSrc:", imageSrc);
+      rows.forEach((row, index) => {
+        const [
+          timestampRaw,
+          building,
+          floor,
+          department,
+          contact,
+          issue,
+          imgURL,
+          status,
+        ] = row.c.map((cell) => (cell ? cell.v : ""));
 
-      const modalId = `modal${index}`;
+        const displayStatus = status ? status : "รอดำเนินการ";
 
-      const card = `
+        const timestamp =
+          typeof timestampRaw === "string" && timestampRaw.includes("Date(")
+            ? parseGoogleDateString(timestampRaw)
+            : new Date(timestampRaw);
+
+        const { date, time } = formatThaiDateTime(timestamp);
+
+        function getImageURL(url) {
+          if (!url) return "https://via.placeholder.com/300x200?text=ไม่มีรูป";
+
+          // กรณีแบบ open?id=xxxx
+          let match = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
+          if (match) {
+            return `https://drive.google.com/thumbnail?id=${match[1]}`;
+          }
+
+          // กรณีแบบ /d/xxxx/
+          match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
+          if (match) {
+            return `https://drive.google.com/thumbnail?id=${match[1]}`;
+          }
+
+          // ถ้าเป็น URL อื่นก็ใช้ตรงๆ
+          return url;
+        }
+
+        const imageSrc = getImageURL(imgURL);
+        const modalId = `modal${index}`;
+
+        const card = `
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="image-wrapper">
@@ -164,7 +200,7 @@ fetch(url2)
                                     <div class="modal-body">
                                        <div class="image-wrapper">
                                           <img src="${imageSrc}" class="card-img-top" alt="รูปภาพแจ้งซ่อม">
-                                          <span class="status-badge">${status}</span>
+                                          <span class="status-badge">${displayStatus}</span>
                                         </div>
                                         <p>วันที่แจ้ง : ${date}</p>
                                         <p>เวลาที่แจ้ง : ${time}</p>
@@ -222,16 +258,22 @@ fetch(url2)
                     </div>
                 </div>
             </div>`;
-      container.innerHTML += card;
-    });
-  })
-  .catch((err) => {
-    console.error("เกิดข้อผิดพลาด:", err);
-    document.getElementById("card-container").innerHTML =
-      "<p>โหลดข้อมูลไม่สำเร็จ</p>";
-  });
+        container.innerHTML += card;
+      });
 
-//แสดงฟอร์มดำเนินการเสร็จสิ้น
+      // หลังจากโหลดข้อมูลเสร็จ ให้ใช้ฟิลเตอร์ปัจจุบัน
+      if (currentFilter !== 'all') {
+        filterTasks(currentFilter);
+      }
+    })
+    .catch((err) => {
+      console.error("เกิดข้อผิดพลาด:", err);
+      document.getElementById("card-container").innerHTML =
+        "<p>โหลดข้อมูลไม่สำเร็จ</p>";
+    });
+}
+
+// แสดงฟอร์มดำเนินการเสร็จสิ้น
 function showFormsuccess(index) {
     // ซ่อนฟอร์ม "ไม่สำเร็จ"
     document.getElementById(`formContainernot${index}`).style.display = 'none';
@@ -245,3 +287,9 @@ function showFormunsuccess(index) {
     // แสดงฟอร์ม "ไม่สำเร็จ"
     document.getElementById(`formContainernot${index}`).style.display = 'block';
 }
+
+// เรียกใช้ฟังก์ชันเมื่อเพจโหลด
+document.addEventListener('DOMContentLoaded', function() {
+  updateStats();
+  loadTasks();
+});

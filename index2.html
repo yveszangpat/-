@@ -46,8 +46,6 @@
             border-radius: 5px;
             width: 100%;
         }
-
-
     </style>
 
     <div>
@@ -85,7 +83,23 @@
 
     </div>
 
-    
+    <div class="filter-section mb-4">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary filter-btn active" id="filter-all"
+                onclick="filterTasks('all')">
+                ทั้งหมด
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-pending"
+                onclick="filterTasks('pending')">
+                รอดำเนินการ
+            </button>
+            <button type="button" class="btn btn-outline-secondary filter-btn" id="filter-done"
+                onclick="filterTasks('done')">
+                เสร็จสิ้น
+            </button>
+        </div>
+    </div>
+
     <!-- <div class="text-center mt-4">
         <button type="button" class="btn btn-outline-secondary ">ทั้งหมด</button>
         <button type="button" class="btn btn-outline-secondary ms-1">รอดำเนินการ</button>
@@ -95,151 +109,13 @@
 
 
     <div class="container mt-4">
-    <div class="row" id="card-container">
-      <!-- Card ทั้งหมดจะมาแสดงที่นี่ -->
+        <div class="row" id="card-container">
+            <!-- Card ทั้งหมดจะมาแสดงที่นี่ -->
+
+        </div>
     </div>
-  </div>
-
-  
-
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-
-        
-        <div class="col">
-            <div class="card">
-                <div class="image-wrapper" style="position: relative;">
-                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
-                        class="card-img-top" alt="...">
-                    <span class="status-badge">รอดำเนินการ</span>
-                </div>
-                <div class="card-body">
-                    <p>วันที่แจ้ง : </p>
-                    <p>เวลาที่แจ้ง : </p>
-                    <p class="card-title">อาคาร : </p>
-                    <p>ชั้น : </p>
-                    <p>หน่วยงานผู้แจ้ง : </p>
-                    <p>เบอร์ภายในที่ติดต่อ : </p>
-                    <p class="mb-2">รายการแจ้งซ่อม : </p>
-
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#staticBackdrop">
-                        รับงาน
-                    </button>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
-                                        class="card-img-top" alt="...">
-                                    <p class="mt-2">วันที่แจ้ง : </p>
-                                    <p class="card-title">อาคาร : </p>
-                                    <p>ชั้น : </p>
-                                    <p>หน่วยงาน : </p>
-                                    <p>เบอร์ติดต่อ: </p>
-                                    <p class="mb-2">รายการปัญหา : </p>
-                                    <hr>
-                                    <div class="from">
-                                        <div class="form">
-                                            <form action="">
-                                                ผลการซ่อม :
-                                                <input type="radio" id="doneRadio" name="status" value="done"
-                                                    onclick="showFormsuccess()" />
-                                                <label for="doneRadio">ดำเนินการเสร็จเรียบร้อย</label>
-
-                                                <input type="radio" id="notdoneRadio" name="status" value="notdone"
-                                                    onclick="showFormunsuccess()" />
-                                                <label for="notDoneRadio">ไม่สามารถดำเนินการได้</label>
-                                            </form>
-
-                                            <!-- ฟอร์มสำเร็จ -->
-                                            <div id="formContainer" style="display:none;">
-                                                <label
-                                                    class="descriction" "detail">รายละเอียดการซ่อม/ความเห็นช่าง:</label><br>
-                                                <textarea id="detail" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
-                                                <label for="detail">อุปกรณ์ที่ใช้:</label><br>
-                                                <textarea id="detail" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
-                                                <label for="detail">ประเภทงาน:</label><br>
-                                                <textarea id="detail" rows="1" style="width: 100%; object-fit: cover;"></textarea>
-                                                
-                                            </div>
-                                            <!-- ฟอร์มไม่สำเร็จ -->
-                                            <div id="formContainernot" style="display:none;">
-                                                <label class="descriction"
-                                                    for="detail">รายละเอียดเพิ่มเติมกรณีที่ไม่สามารถดำเนินการได้:</label><br>
-                                                <textarea id="detail" rows="2"
-                                                    style="width: 100%; object-fit: cover;"></textarea>
-                                                <label for="detail">ประเภทงาน:</label><br>
-                                                <textarea id="detail" rows="1" style="width: 100%; object-fit: cover;"></textarea>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=" modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                    <button type="button" class="btn btn-primary">ยืนยัน</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
 
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <img src="https://img.kapook.com/u/surauch/movie3/shutterstock_109439771.jpg" class="card-img-top"
-                    alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">อาคาร ชั้น</h5>
-                    <p class="card-text">รายการแจ้งซ่อม</p>
-                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
-                    <a href="#" class="btn btn-primary">รับงาน</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
-                    class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">อาคาร ชั้น</h5>
-                    <p class="card-text">รายการแจ้งซ่อม</p>
-                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
-                    <a href="#" class="btn btn-primary">รับงาน</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <img src="https://www.q-chang.com/blog/wp-content/uploads/2024/11/10-ways-to-install-ceiling-1024x683.jpg"
-                    class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">อาคาร ชั้น</h5>
-                    <p class="card-text">รายการแจ้งซ่อม</p>
-                    <a href="#" class="btn btn-primary">รายละเอียดการแจ้งซ่อม</a>
-                    <a href="#" class="btn btn-primary">รับงาน</a>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
 
 
 
